@@ -1,6 +1,6 @@
 from common import get_api_key, conv_template, extract_json
 from language_models import APILiteLLM
-from config import FASTCHAT_TEMPLATE_NAMES, Model
+from config import FASTCHAT_TEMPLATE_NAMES, Model, OLLAMA_MODEL_NAMES, MODEL_NAMES
 
 
 def load_attack_and_target_models(args):
@@ -16,12 +16,14 @@ def load_attack_and_target_models(args):
                         category = args.category,
                         max_n_tokens = args.target_max_n_tokens,
                         evaluate_locally = args.evaluate_locally,
-                        phase = args.jailbreakbench_phase
+                        phase = args.jailbreakbench_phase,
+                        use_ollama=True if args.target_model in [model.value for model in OLLAMA_MODEL_NAMES.keys()] else False
                         )
     
     return attackLM, targetLM
 
-def load_indiv_model(model_name, local = False, use_jailbreakbench=True):
+def load_indiv_model(model_name, local = False, use_jailbreakbench=False, use_ollama=False):
+    use_jailbreakbench = False
     if use_jailbreakbench: 
         if local:
             from jailbreakbench import LLMvLLM
@@ -32,9 +34,10 @@ def load_indiv_model(model_name, local = False, use_jailbreakbench=True):
             lm = LLMLiteLLM(model_name= model_name, api_key = api_key)
     else:
         if local:
-            raise NotImplementedError
+            lm = LocalvLLM(model_name)
+            # raise NotImplementedError
         else:
-            lm = APILiteLLM(model_name)
+            lm = APILiteLLM(model_name, use_ollama=use_ollama)
     return lm
 
 class AttackLM():
@@ -163,20 +166,23 @@ class TargetLM():
             phase: str,
             evaluate_locally: bool = False,
             use_jailbreakbench: bool = True,
+            use_ollama: bool = False
             ):
         
         self.model_name = model_name
         self.max_n_tokens = max_n_tokens
         self.phase = phase
-        self.use_jailbreakbench = use_jailbreakbench
+        self.use_jailbreakbench = False
         self.evaluate_locally = evaluate_locally
+        self.use_ollama = use_ollama
 
         from config import TARGET_TEMP,  TARGET_TOP_P   
         self.temperature = TARGET_TEMP
         self.top_p = TARGET_TOP_P
 
-        self.model = load_indiv_model(model_name, evaluate_locally, use_jailbreakbench)            
+        self.model = load_indiv_model(model_name, evaluate_locally, use_jailbreakbench, use_ollama=self.use_ollama)            
         self.category = category
+        self.template = ""
 
     def get_response(self, prompts_list):
         if self.use_jailbreakbench:

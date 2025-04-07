@@ -1,0 +1,8 @@
+wandb
+pandas
+fastchat
+torch
+transformers
+accelerate
+litellm
+jailbreakbench

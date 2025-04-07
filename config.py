@@ -1,6 +1,6 @@
 from enum import Enum
-VICUNA_PATH = "/home/pchao/vicuna-13b-v1.5"
-LLAMA_PATH = "/home/pchao/Llama-2-7b-chat-hf"
+VICUNA_PATH = "/home/pzhao/vicuna-13b-v1.5"
+LLAMA_PATH = "/home/pzhao/Llama-2-7b-chat-hf"
 
 ATTACK_TEMP = 1
 TARGET_TEMP = 0
@@ -11,7 +11,8 @@ TARGET_TOP_P = 1
 ## MODEL PARAMETERS ##
 class Model(Enum):
     vicuna = "vicuna-13b-v1.5"
-    llama_2 = "llama-2-7b-chat-hf"
+    llama_2 = "llama2"
+    llama_2_uncensored = "llama2-uncensored"
     gpt_3_5 = "gpt-3.5-turbo-1106"
     gpt_4 = "gpt-4-0125-preview"
     claude_1 = "claude-instant-1.2"
@@ -28,8 +29,13 @@ HF_MODEL_NAMES: dict[Model, str] = {
     Model.mixtral: "mistralai/Mixtral-8x7B-Instruct-v0.1"
 }
 
+OLLAMA_MODEL_NAMES: dict[Model, str] = {
+    Model.llama_2: "ollama/llama2:latest",
+    Model.llama_2_uncensored: "ollama/llama2-uncensored:latest"
+}
+
 TOGETHER_MODEL_NAMES: dict[Model, str] = {
-    Model.llama_2: "together_ai/togethercomputer/llama-2-7b-chat",
+    # Model.llama_2: "together_ai/togethercomputer/llama-2-7b-chat",
     Model.vicuna: "together_ai/lmsys/vicuna-13b-v1.5",
     Model.mixtral: "together_ai/mistralai/Mixtral-8x7B-Instruct-v0.1"
 }
@@ -70,6 +76,15 @@ LITELLM_TEMPLATES: dict[Model, dict] = {
                 "eos_tokens": ["</s>"]         
                 },
     Model.llama_2: {"roles":{
+                    "system": {"pre_message": "[INST] <<SYS>>\n", "post_message": "\n<</SYS>>\n\n"},
+                    "user": {"pre_message": "", "post_message": " [/INST]"},
+                    "assistant": {"pre_message": "", "post_message": ""},
+                },
+                "post_message" : " </s><s>",
+                "initial_prompt_value" : "",
+                "eos_tokens" :  ["</s>", "[/INST]"]  
+            },
+    Model.llama_2_uncensored: {"roles":{
                     "system": {"pre_message": "[INST] <<SYS>>\n", "post_message": "\n<</SYS>>\n\n"},
                     "user": {"pre_message": "", "post_message": " [/INST]"},
                     "assistant": {"pre_message": "", "post_message": ""},

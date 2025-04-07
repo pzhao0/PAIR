@@ -1,6 +1,7 @@
 import os 
 import litellm
-from config import TOGETHER_MODEL_NAMES, LITELLM_TEMPLATES, API_KEY_NAMES, Model
+import vllm
+from config import TOGETHER_MODEL_NAMES, LITELLM_TEMPLATES, API_KEY_NAMES, Model, HF_MODEL_NAMES, MODEL_NAMES, OLLAMA_MODEL_NAMES
 from loggers import logger
 from common import get_api_key
 
@@ -20,16 +21,21 @@ class APILiteLLM(LanguageModel):
     API_QUERY_SLEEP = 1
     API_MAX_RETRY = 5
     API_TIMEOUT = 20
+    use_ollama = False
 
-    def __init__(self, model_name):
+    def __init__(self, model_name, use_ollama=False):
         super().__init__(model_name)
-        self.api_key = get_api_key(self.model_name)
+        self.api_key = get_api_key(self.model_name, use_ollama=use_ollama)
         self.litellm_model_name = self.get_litellm_model_name(self.model_name)
         litellm.drop_params=True
         self.set_eos_tokens(self.model_name)
+        self.use_ollama = use_ollama
         
     def get_litellm_model_name(self, model_name):
-        if model_name in TOGETHER_MODEL_NAMES:
+        if model_name in OLLAMA_MODEL_NAMES:
+            litellm_name = OLLAMA_MODEL_NAMES[model_name]
+            self.use_open_source_model = True
+        elif model_name in TOGETHER_MODEL_NAMES:
             litellm_name = TOGETHER_MODEL_NAMES[model_name]
             self.use_open_source_model = True
         else:
@@ -76,7 +82,8 @@ class APILiteLLM(LanguageModel):
         outputs = litellm.batch_completion(
             model=self.litellm_model_name, 
             messages=convs_list,
-            api_key=self.api_key,
+            api_base="http://localhost:11434" if self.use_ollama else None,
+            api_key=self.api_key if not self.use_ollama else None,
             temperature=temperature,
             top_p=top_p,
             max_tokens=max_n_tokens,
@@ -94,10 +101,10 @@ class APILiteLLM(LanguageModel):
 #     def __init__(self, model_name: str):
 #         """Initializes the LLMHuggingFace with the specified model name."""
 #         super().__init__(model_name)
-#         if self.model_name not in MODEL_NAMES:
-#             raise ValueError(f"Invalid model name: {model_name}")
+#         # if self.model_name not in MODEL_NAMES:
+#         #     raise ValueError(f"Invalid model name: {model_name}")
 #         self.hf_model_name = HF_MODEL_NAMES[Model(model_name)]
-#         destroy_model_parallel()
+#         vllm.destroy_model_parallel()
 #         self.model = vllm.LLM(model=self.hf_model_name)
 #         if self.temperature > 0:
 #             self.sampling_params = vllm.SamplingParams(
@@ -129,7 +136,7 @@ class APILiteLLM(LanguageModel):
 #         return full_prompts
 
 #     def _init_conv_template(self):
-#         template = get_conversation_template(self.hf_model_name)
+#         template = vllm.get_conversation_template(self.hf_model_name)
 #         if "llama" in self.hf_model_name:
 #             # Add the system prompt for Llama as FastChat does not include it
 #             template.system_message = """You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe. Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.\n\nIf a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information."""

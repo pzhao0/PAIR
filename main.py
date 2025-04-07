@@ -16,9 +16,6 @@ def memory_usage_psutil():
 def main(args):
     memory_before = memory_usage_psutil()
 
-
-
-
     # Initialize models and judge
     attackLM, targetLM = load_attack_and_target_models(args)
     judgeLM = load_judge(args)
@@ -104,7 +101,7 @@ if __name__ == '__main__':
         "--target-model",
         default = "vicuna-13b-v1.5", #TODO changed
         help = "Name of target model.",
-        choices=["vicuna-13b-v1.5", "llama-2-7b-chat-hf", "gpt-3.5-turbo-1106", "gpt-4-0125-preview", "claude-instant-1.2", "claude-2.1", "gemini-pro",]
+        choices=["vicuna-13b-v1.5", "llama-2-7b-chat-hf", "gpt-3.5-turbo-1106", "gpt-4-0125-preview", "claude-instant-1.2", "claude-2.1", "gemini-pro", "llama2", "llama2-uncensored"]
     )
     parser.add_argument(
         "--target-max-n-tokens",
