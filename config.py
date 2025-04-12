@@ -11,14 +11,17 @@ TARGET_TOP_P = 1
 ## MODEL PARAMETERS ##
 class Model(Enum):
     vicuna = "vicuna-13b-v1.5"
-    llama_2 = "llama2"
-    llama_2_uncensored = "llama2-uncensored"
     gpt_3_5 = "gpt-3.5-turbo-1106"
     gpt_4 = "gpt-4-0125-preview"
     claude_1 = "claude-instant-1.2"
     claude_2 = "claude-2.1"
     gemini = "gemini-pro"
     mixtral = "mixtral"
+    llama_2 = "llama2"
+    llama_2_uncensored = "llama2-uncensored"
+    tinyllama = "tinyllama"
+    gemma_2b = "gemma:2b"
+    gemma_7b = "gemma:7b"
 
 MODEL_NAMES = [model.value for model in Model]
 
@@ -31,7 +34,10 @@ HF_MODEL_NAMES: dict[Model, str] = {
 
 OLLAMA_MODEL_NAMES: dict[Model, str] = {
     Model.llama_2: "ollama/llama2:latest",
-    Model.llama_2_uncensored: "ollama/llama2-uncensored:latest"
+    Model.llama_2_uncensored: "ollama/llama2-uncensored:latest",
+    Model.tinyllama: "ollama/tinyllama:latest",
+    Model.gemma_2b: "ollama/gemma:2b",
+    Model.gemma_7b: "ollama/gemma:7b"
 }
 
 TOGETHER_MODEL_NAMES: dict[Model, str] = {
@@ -85,6 +91,33 @@ LITELLM_TEMPLATES: dict[Model, dict] = {
                 "eos_tokens" :  ["</s>", "[/INST]"]  
             },
     Model.llama_2_uncensored: {"roles":{
+                    "system": {"pre_message": "[INST] <<SYS>>\n", "post_message": "\n<</SYS>>\n\n"},
+                    "user": {"pre_message": "", "post_message": " [/INST]"},
+                    "assistant": {"pre_message": "", "post_message": ""},
+                },
+                "post_message" : " </s><s>",
+                "initial_prompt_value" : "",
+                "eos_tokens" :  ["</s>", "[/INST]"]  
+            },
+    Model.tinyllama: {"roles":{
+                    "system": {"pre_message": "[INST] <<SYS>>\n", "post_message": "\n<</SYS>>\n\n"},
+                    "user": {"pre_message": "", "post_message": " [/INST]"},
+                    "assistant": {"pre_message": "", "post_message": ""},
+                },
+                "post_message" : " </s><s>",
+                "initial_prompt_value" : "",
+                "eos_tokens" :  ["</s>", "[/INST]"]  
+            },
+    Model.gemma_2b: {"roles":{
+                    "system": {"pre_message": "[INST] <<SYS>>\n", "post_message": "\n<</SYS>>\n\n"},
+                    "user": {"pre_message": "", "post_message": " [/INST]"},
+                    "assistant": {"pre_message": "", "post_message": ""},
+                },
+                "post_message" : " </s><s>",
+                "initial_prompt_value" : "",
+                "eos_tokens" :  ["</s>", "[/INST]"]  
+            },
+    Model.gemma_7b: {"roles":{
                     "system": {"pre_message": "[INST] <<SYS>>\n", "post_message": "\n<</SYS>>\n\n"},
                     "user": {"pre_message": "", "post_message": " [/INST]"},
                     "assistant": {"pre_message": "", "post_message": ""},
