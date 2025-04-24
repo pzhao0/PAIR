@@ -22,6 +22,7 @@ class Model(Enum):
     tinyllama = "tinyllama"
     gemma_2b = "gemma:2b"
     gemma_7b = "gemma:7b"
+    llama_guard = "llama-guard"
 
 MODEL_NAMES = [model.value for model in Model]
 
@@ -37,7 +38,8 @@ OLLAMA_MODEL_NAMES: dict[Model, str] = {
     Model.llama_2_uncensored: "ollama/llama2-uncensored:latest",
     Model.tinyllama: "ollama/tinyllama:latest",
     Model.gemma_2b: "ollama/gemma:2b",
-    Model.gemma_7b: "ollama/gemma:7b"
+    Model.gemma_7b: "ollama/gemma:7b",
+    Model.llama_guard: "ollama/llama-guard3:1b"
 }
 
 TOGETHER_MODEL_NAMES: dict[Model, str] = {
@@ -118,6 +120,15 @@ LITELLM_TEMPLATES: dict[Model, dict] = {
                 "eos_tokens" :  ["</s>", "[/INST]"]  
             },
     Model.gemma_7b: {"roles":{
+                    "system": {"pre_message": "[INST] <<SYS>>\n", "post_message": "\n<</SYS>>\n\n"},
+                    "user": {"pre_message": "", "post_message": " [/INST]"},
+                    "assistant": {"pre_message": "", "post_message": ""},
+                },
+                "post_message" : " </s><s>",
+                "initial_prompt_value" : "",
+                "eos_tokens" :  ["</s>", "[/INST]"]  
+            },
+    Model.llama_guard: {"roles":{
                     "system": {"pre_message": "[INST] <<SYS>>\n", "post_message": "\n<</SYS>>\n\n"},
                     "user": {"pre_message": "", "post_message": " [/INST]"},
                     "assistant": {"pre_message": "", "post_message": ""},
