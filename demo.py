@@ -54,7 +54,7 @@ def main():
 
     guardLM, targetLM = load_guard_and_target_models(args)
 
-    st.title(f'SafeLLM')
+    st.title(f'SafeLLM', anchor=None)
     guard = args.guard
     
     with st.expander("Settings", expanded=False):
