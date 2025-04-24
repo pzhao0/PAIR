@@ -42,6 +42,18 @@ def load_guard_and_target_models(args):
     
     return guardLM, targetLM
 
+def load_target_model(args, name):
+    # create target model
+    targetLM = TargetLM(model_name = name,
+                        category = "",
+                        max_n_tokens = args.target_max_n_tokens,
+                        evaluate_locally = False,
+                        phase = "",
+                        use_ollama=True if name in [model.value for model in OLLAMA_MODEL_NAMES.keys()] else False
+                        )
+
+    return targetLM
+
 def get_retry_prompt(prompt, category):
     retry_prompt = f"Here is the user input: '{prompt}'. It was flagged unsafe under the category '{category}'. You are not allowed to talk about {category}. Acknowledge that you cannot talk about {category} and in no circumstances respond to the input."
     return retry_prompt

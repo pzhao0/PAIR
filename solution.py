@@ -1,8 +1,15 @@
 import argparse
-from conversers import load_guard_and_target_models
+from conversers import load_guard_and_target_models, load_target_model
 from conversers import parse_llama_guard, remove_tokens, get_retry_prompt
 
 NAME = "Evan"
+targetLM = None
+
+def change_target_model(args, name):
+    choices=["gpt-3.5-turbo-1106", "llama2", "llama2-uncensored", "tinyllama", "gemma:2b", "gemma:7b"]
+    if name in choices:
+        global targetLM
+        targetLM = load_target_model(args, name)
 
 def main(args):
 
@@ -53,7 +60,7 @@ if __name__ == '__main__':
         "--target-model",
         default = "gpt-3.5-turbo-1106", #TODO changed
         help = "Name of target model.",
-        choices=["vicuna-13b-v1.5", "llama-2-7b-chat-hf", "gpt-3.5-turbo-1106", "gpt-4-0125-preview", "claude-instant-1.2", "claude-2.1", "gemini-pro", "llama2", "llama2-uncensored", "tinyllama", "gemma:2b", "gemma:7b"]
+        choices=["gpt-3.5-turbo-1106", "llama2", "llama2-uncensored", "tinyllama", "gemma:2b", "gemma:7b"]
     )
     parser.add_argument(
         "--target-max-n-tokens",

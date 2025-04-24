@@ -1,6 +1,5 @@
 import os 
 import litellm
-import vllm
 from config import TOGETHER_MODEL_NAMES, LITELLM_TEMPLATES, API_KEY_NAMES, Model, HF_MODEL_NAMES, MODEL_NAMES, OLLAMA_MODEL_NAMES
 from loggers import logger
 from common import get_api_key
