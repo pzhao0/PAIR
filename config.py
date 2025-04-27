@@ -15,7 +15,7 @@ class Model(Enum):
     gpt_4 = "gpt-4-0125-preview"
     claude_1 = "claude-instant-1.2"
     claude_2 = "claude-2.1"
-    gemini = "gemini-pro"
+    gemini = "gemini-2.0-flash-lite"
     mixtral = "mixtral"
     llama_2 = "llama2"
     llama_2_uncensored = "llama2-uncensored"

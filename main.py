@@ -63,9 +63,9 @@ def main(args):
             conv.messages = conv.messages[-2*(args.keep_last_n):]
 
         # Early stopping criterion
-        if any([score == 10 for score in judge_scores]):
-            logger.info("Found a jailbreak. Exiting.")
-            break
+        # if any([score == 10 for score in judge_scores]):
+        #     logger.info("Found a jailbreak. Exiting.")
+        #     break
     
     wandb_logger.finish()
 

@@ -4,7 +4,6 @@ import sys
 from conversers import load_guard_and_target_models, load_target_model
 from conversers import parse_llama_guard, remove_tokens, get_retry_prompt
 
-NAME = "Evan"
 targetLM = None
 
 def change_target_model(args, name):
@@ -52,6 +51,7 @@ def main():
     args = parser.parse_args()
     args.target_max_n_tokens = 150
 
+    global targetLM
     guardLM, targetLM = load_guard_and_target_models(args)
 
     st.title(f'SafeLLM', anchor=None)
