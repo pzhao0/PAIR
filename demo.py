@@ -19,6 +19,10 @@ def chat_with_bot(prompt, guard, guardLM, targetLM):
         safe, category = parse_llama_guard(guardLM.query(prompt))
         if safe or category is None:
             target_response = targetLM.query(prompt)
+            safe, category = parse_llama_guard(target_response)
+            if safe or category is None:
+                retry_prompt = get_retry_prompt(prompt, category)
+                target_response = targetLM.query(retry_prompt)
         else:
             retry_prompt = get_retry_prompt(prompt, category)
             target_response = targetLM.query(retry_prompt)
