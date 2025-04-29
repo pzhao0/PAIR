@@ -38,7 +38,7 @@ def main(args):
                 if safe or category is None:
                     target_response = targetLM.query(prompt)
                     safe, category = parse_llama_guard(target_response)
-                    if safe or category is None:
+                    if not safe or category is not None:
                         retry_prompt = get_retry_prompt(prompt, category)
                         target_response = targetLM.query(retry_prompt)
                 else:
